@@ -16,4 +16,11 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="email">email</string>
     <string name="home">Home</string>
+    <string name="username">Mucenic Ion Viorel</string>
+    <string name="userEmail">viomucenic@icloud.com</string>
+    <string name="about_us">About Us</string>
+    <string name="contact">Contact</string>
+    <string name="share">Share</string>
+    <string name="add_new_places">add new places</string>
+    <string name="title">Add new Places</string>
 </resources>
