@@ -23,4 +23,5 @@
     <string name="share">Share</string>
     <string name="add_new_places">add new places</string>
     <string name="title">Add new Places</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

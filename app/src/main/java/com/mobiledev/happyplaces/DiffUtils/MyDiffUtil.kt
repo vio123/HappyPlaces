@@ -1,7 +1,7 @@
 package com.mobiledev.happyplaces.DiffUtils
 
 import androidx.recyclerview.widget.DiffUtil
-import com.mobiledev.happyplaces.room.Place
+import com.mobiledev.happyplaces.model.Place
 
 class MyDiffUtil(
     private val oldList:List<Place>,
@@ -27,7 +27,16 @@ class MyDiffUtil(
            oldList[oldItemPosition].img != newList[newItemPosition].img ->{
                false
            }
-           oldList[oldItemPosition].location != newList[newItemPosition].location -> {
+           oldList[oldItemPosition].dateTime != newList[newItemPosition].dateTime -> {
+               false
+           }
+           oldList[oldItemPosition].activityType != newList[newItemPosition].activityType -> {
+               false
+           }
+           oldList[oldItemPosition].placeType != newList[newItemPosition].placeType -> {
+               false
+           }
+           oldList[oldItemPosition].note != newList[newItemPosition].note -> {
                false
            }
            else ->

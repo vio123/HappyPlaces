@@ -1,15 +1,18 @@
 package com.mobiledev.happyplaces.room
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.lifecycle.LiveData
+import androidx.room.*
+import com.mobiledev.happyplaces.model.Place
+
 @Dao
 interface PlaceDao {
-    @Query("SELECT * FROM PlaceTable")
-    fun getAll(): List<Place>
-    @Insert
-    fun insertAll(place: Place)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(place:Place)
+    @Update
+    suspend fun update(place:Place)
     @Delete
-    fun delete(place: Place)
+    suspend fun delete(place:Place)
+    @Query("SELECT * FROM PlaceTable ORDER BY id ASC")
+    fun getAllPlace():LiveData<List<Place>>
+
 }

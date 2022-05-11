@@ -1,4 +1,5 @@
-package com.mobiledev.happyplaces.fragments.ui.dialog
+package com.mobiledev.happyplaces
+
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
@@ -7,56 +8,46 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.location.Geocoder
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
-import com.mobiledev.happyplaces.MapsActivity
-import com.mobiledev.happyplaces.R
-import com.mobiledev.happyplaces.databinding.FragmentAddDialogBinding
+import com.mobiledev.happyplaces.databinding.ActivityEditBinding
 import com.mobiledev.happyplaces.fragments.ui.home.HomeViewModel
 import com.mobiledev.happyplaces.model.Place
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.properties.Delegates
 
-
-class AddDialogFragment :DialogFragment() {
+class EditActivity : AppCompatActivity() {
     private val actType:Array<String> = arrayOf("Select Activity Type","hiking","walking","running")
     private val placeType:Array<String> = arrayOf("Select Place Type","munte","mare")
-    private var _binding: FragmentAddDialogBinding? = null
     private lateinit var geocoder: Geocoder
     // This property is only valid between onCreateView and
     // onDestroyView.
-    private val binding get() = _binding!!
     private  var img: Uri? = null
     private var nr = 0
     private lateinit var list:List<String>
     private var longitude by Delegates.notNull<Double>()
     private var latitude by Delegates.notNull<Double>()
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    private lateinit var binding: ActivityEditBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityEditBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val plc:Place = intent.getSerializableExtra("list") as Place
         val homeViewModel =
             ViewModelProvider(this,
-                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application))[HomeViewModel::class.java]
-
-        _binding = FragmentAddDialogBinding.inflate(inflater, container, false)
+                ViewModelProvider.AndroidViewModelFactory.getInstance(application))[HomeViewModel::class.java]
         binding.chooseFile.setOnClickListener {
             pickImage()
         }
-        val actAdapter = ArrayAdapter(requireActivity().applicationContext,android.R.layout.simple_spinner_dropdown_item,actType)
+        val actAdapter = ArrayAdapter(applicationContext,android.R.layout.simple_spinner_dropdown_item,actType)
         binding.activityType.adapter = actAdapter
-        binding.activityType.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+        binding.activityType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
 
             }
@@ -66,10 +57,10 @@ class AddDialogFragment :DialogFragment() {
             }
 
         }
-        geocoder = Geocoder(context, Locale.getDefault())
-        val placeAdapter = ArrayAdapter(requireActivity().applicationContext,android.R.layout.simple_spinner_dropdown_item,placeType)
+        geocoder = Geocoder(this, Locale.getDefault())
+        val placeAdapter = ArrayAdapter(applicationContext,android.R.layout.simple_spinner_dropdown_item,placeType)
         binding.placeType.adapter = placeAdapter
-        binding.placeType.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+        binding.placeType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
 
             }
@@ -80,24 +71,25 @@ class AddDialogFragment :DialogFragment() {
 
         }
         val myCalendar = Calendar.getInstance()
-        val datePicker = DatePickerDialog.OnDateSetListener{ view,year,month,dayOfMonth ->
+        val datePicker = DatePickerDialog.OnDateSetListener{ view, year, month, dayOfMonth ->
             myCalendar.set(Calendar.YEAR,year)
             myCalendar.set(Calendar.MONTH,month)
             myCalendar.set(Calendar.DAY_OF_MONTH,dayOfMonth)
             updateLabel(myCalendar)
         }
         binding.chooseDate.setOnClickListener {
-            DatePickerDialog(requireContext(),datePicker,myCalendar.get(Calendar.YEAR),myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.DAY_OF_MONTH)).show()
+            DatePickerDialog(this,datePicker,myCalendar.get(Calendar.YEAR),myCalendar.get(
+                Calendar.MONTH),myCalendar.get(Calendar.DAY_OF_MONTH)).show()
         }
         binding.adressBtn.setOnClickListener {
-            startActivityForResult(Intent(context,MapsActivity::class.java),1)
+            startActivityForResult(Intent(this,MapsActivity::class.java),1)
         }
         binding.addBtn.setOnClickListener {
             nr=0
-           if(binding.namePlaces.text.isEmpty()){
-               binding.namePlaces.error = "Is empty"
-               ++nr
-           }
+            if(binding.namePlaces.text.isEmpty()){
+                binding.namePlaces.error = "Is empty"
+                ++nr
+            }
             if(binding.note.text!!.isEmpty()){
                 binding.note.error = "Is empty"
                 ++nr
@@ -118,23 +110,20 @@ class AddDialogFragment :DialogFragment() {
             }
             if(nr == 0){
                 if(img == null) {
-                    img = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+                    img = Uri.parse(
+                        ContentResolver.SCHEME_ANDROID_RESOURCE +
                             "://" + resources.getResourcePackageName(R.drawable.ic_photo)
                             + '/' + resources.getResourceTypeName(R.drawable.ic_photo) + '/' + resources.getResourceEntryName(R.drawable.ic_photo) )
                 }
-                    val bitmap: Bitmap =
-                        MediaStore.Images.Media.getBitmap(requireContext().contentResolver, img)
-                    val place = Place(binding.namePlaces.text.toString(),bitmap,binding.date.text.toString(),binding.activityType.selectedItem.toString(),
-                        binding.placeType.selectedItem.toString(),list[0]+","+list[1],latitude,longitude,binding.note.text.toString(),
-                        fav = false)
-                    homeViewModel.addPlace(place)
-
-                dialog!!.dismiss()
+                val bitmap: Bitmap =
+                    MediaStore.Images.Media.getBitmap(this.contentResolver, img)
+                val place = Place(binding.namePlaces.text.toString(),bitmap,binding.date.text.toString(),binding.activityType.selectedItem.toString(),
+                    binding.placeType.selectedItem.toString(),list[0]+","+list[1],latitude,longitude,binding.note.text.toString(),
+                    fav = false)
+                homeViewModel.updatePlace(place)
             }
         }
-         return binding.root
     }
-
     @SuppressLint("SimpleDateFormat")
     private fun updateLabel(myCalendar: Calendar) {
         val myFormat = "dd-MM-yyyy"
@@ -167,14 +156,5 @@ class AddDialogFragment :DialogFragment() {
             binding.adress.text = "Location received"
         }
 
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.e("start","started")
     }
 }

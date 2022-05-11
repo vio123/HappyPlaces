@@ -9,10 +9,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.room.Room
 import com.mobiledev.happyplaces.databinding.ActivityMainBinding
-import com.mobiledev.happyplaces.room.AppDatabase
-import com.mobiledev.happyplaces.room.Place
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,12 +21,6 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "PlaceDatabase"
-        ).build()
-        val placeDao = db.placeDao()
-        placeDao.insertAll(Place("Cazino Constanta",R.drawable.ic_photo,"Constanta"))
         setSupportActionBar(binding.appBarMain.toolbar)
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView

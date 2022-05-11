@@ -22,11 +22,4 @@ class ShareFragment : Fragment() {
     ): View? {
         return inflater.inflate(R.layout.share_fragment, container, false)
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ShareViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
 }
